@@ -1,0 +1,18 @@
+# Node modules
+backend/node_modules/
+frontend/node_modules/
+
+# Build
+backend/dist/
+frontend/dist/
+
+# Env files
+.env
+backend/.env
+frontend/.env
+
+# Logs
+*.log
+
+# Coverage
+coverage/
