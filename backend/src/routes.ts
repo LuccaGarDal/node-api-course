@@ -44,6 +44,7 @@ router.get("/cursos", (req, res) => {
 
 router.post("/matricula", (req, res) => {
     const { nome, email, cursoId } = req.body;
+    console.log(req.body);
 
     const erro = validarDados(req.body);
     if (erro) {
