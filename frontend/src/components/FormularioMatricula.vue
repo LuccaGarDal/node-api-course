@@ -1,10 +1,36 @@
 <script setup>
-import { reactive } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
+
+const cursos = ref([])
+const carregandoCursos = ref(false)
 
 const form = reactive({
   nome: '',
   email: '',
-  cursoId: 1
+  cursoId: null
+})
+
+async function carregarCursos () {
+  carregandoCursos.value = true
+  try {
+    const response = await fetch('http://localhost:3000/api/cursos')
+    const data = await response.json()
+    
+    if (!response.ok) {
+      throw new Error(data?.error || 'Erro ao carregar cursos')
+    }
+
+    cursos.value = data
+
+    } catch (error) {
+      console.error('Erro:', error)
+    } finally {
+      carregandoCursos.value = false
+    }
+}
+
+onMounted(() => {
+  carregarCursos()
 })
 
 async function enviarFormulario () {
@@ -38,7 +64,12 @@ async function enviarFormulario () {
       <br>
       <input type="text" v-model="form.email" placeholder="E-mail">
       <br>
-      <input type="number" min="1" max="6" v-model.number="form.cursoId" placeholder="ID do curso">
+      <select v-model.number="form.cursoId" :disabled="carregandoCursos">
+        <option :value="null" disabled>Selecione o curso</option>
+        <option v-for="curso in cursos" :key="curso.id" :value="curso.id">
+          {{ curso.nome }}
+        </option>
+      </select>
       <button type="submit">Enviar</button>
     </form>
   </div>
