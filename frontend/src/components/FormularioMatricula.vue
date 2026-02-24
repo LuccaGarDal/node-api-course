@@ -3,12 +3,23 @@ import { onMounted, reactive, ref } from 'vue'
 
 const cursos = ref([])
 const carregandoCursos = ref(false)
+const formularioValidado = ref(false)
 
 const form = reactive({
   nome: '',
   email: '',
   cursoId: null
 })
+
+function validarFormulario () {
+  if (!form.nome || !form.email || !form.cursoId) {
+    alert('Por favor, preencha todos os campos do formulário.')
+    formularioValidado.value = false
+  } else {
+    return formularioValidado.value = true
+  }
+}
+
 
 async function carregarCursos () {
   carregandoCursos.value = true
@@ -57,9 +68,9 @@ async function enviarFormulario () {
 </script>
 
 <template>
-  <div class="container">
+  <div v-if="!formularioValidado" class="container">
     <h1>Cadastro de usuários</h1>
-    <form @submit.prevent="enviarFormulario">
+    <form @submit.prevent="validarFormulario() && enviarFormulario()">
       <div class="campo">
         <input
           type="text"
@@ -94,6 +105,19 @@ async function enviarFormulario () {
       </div>
       <button type="submit">Enviar</button>
     </form>
+  </div>
+
+  <div v-if="formularioValidado" class="container sucesso">
+    <h1>Formulário enviado com sucesso!</h1>
+    <p>Obrigado por se cadastrar. Em breve entraremos em contato.</p>
+    <p><strong>Nome:</strong> {{ form.nome }}</p>
+    <p><strong>E-mail:</strong> {{ form.email }}</p>
+    <p>
+      <strong>Curso:</strong>
+      {{
+        cursos.find(c => c.id === form.cursoId)?.nome
+      }}
+    </p>
   </div>
 </template>
 
@@ -160,5 +184,18 @@ button:hover {
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.sucesso {
+  text-align: center;
+}
+
+.sucesso h1 {
+  color: #42b883;
+  margin-bottom: 20px;
+}
+
+.sucesso p {
+  margin: 8px 0;
 }
 </style>
